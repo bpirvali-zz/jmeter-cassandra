@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'groupId'
+version = '0.9.4'
+
+description = """"""
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+
+
+repositories {
+
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile(group: 'com.datastax.cassandra', name: 'cassandra-driver-core', version: '2.1.7.1') {
+        exclude(module: 'slf4j-api')
+    }
+    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.5'
+    testCompile group: 'org.testng', name: 'testng', version: '6.8.8'
+    compileOnly(group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '3.1') {
+        exclude(module: 'slf4j-nop')
+        exclude(module: 'commons-math3')
+        exclude(module: 'commons-pool2')
+        /* This dependency was originally in the Maven provided scope, but the project was not of type war.
+        This behavior is not yet supported by Gradle, so this dependency has been converted to a compile dependency.
+        Please review and delete this closure when resolved. */
+    }
+}
+
+task copyDepJars(type: Copy) {
+    from configurations.runtime.allArtifacts.files
+    from configurations.runtime
+    into './dep-jars'
+}
